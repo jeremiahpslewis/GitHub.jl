@@ -23,11 +23,13 @@ import HTTP,
 
 const ENTROPY = Ref{MbedTLS.Entropy}()
 const RNG     = Ref{MbedTLS.CtrDrbg}()
+const SSLCONFIG = Ref{MbedTLS.SSLConfig}()
 
 function __init__()
     ENTROPY[] = MbedTLS.Entropy()
     RNG[]     = MbedTLS.CtrDrbg()
     MbedTLS.seed!(RNG[], ENTROPY[])
+    SSLCONFIG[] = MbedTLS.SSLConfig(false)
 end
 
 #############

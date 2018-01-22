@@ -56,9 +56,9 @@ function github_request(api::GitHubAPI, request_method, endpoint;
     _headers = convert(Dict{String, String}, headers)
     !haskey(_headers, "User-Agent") && (_headers["User-Agent"] = "GitHub-jl")
     if request_method == HTTP.get
-        r = request_method(merge(api_endpoint, query = params), _headers, redirect = allowredirects, status_exception = false)
+        r = request_method(merge(api_endpoint, query = params), _headers, redirect = allowredirects, status_exception = false; sslconfig = SSLCONFIG[])
     else
-        r = request_method(string(api_endpoint), _headers, JSON.json(params), redirect = allowredirects, status_exception = false)
+        r = request_method(string(api_endpoint), _headers, JSON.json(params), redirect = allowredirects, status_exception = false, sslconfig = SSLCONFIG[])
     end
     handle_error && handle_response_error(r)
     return r
@@ -120,7 +120,7 @@ function github_paged_get(api, endpoint; page_limit = Inf, start_page = "", hand
             links = get_page_links(r)
             next_index = find_page_link(links, "next")
             next_index == 0 && break
-            r = HTTP.get(extract_page_url(links[next_index]), headers = _headers)
+            r = HTTP.get(extract_page_url(links[next_index]), headers = _headers; sslconfig = SSLCONFIG[])
             handle_error && handle_response_error(r)
             push!(results, r)
             page_count += 1
